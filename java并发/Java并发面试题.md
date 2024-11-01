@@ -86,6 +86,8 @@ synchronized同步代码块使用的是**monitorenter**和**monitorexit**，分�
 
 2. **可实现公平锁**。ReentrantLock可以指定是公平锁或非公平锁，而synchronized只能是非公平锁。
 
+### AQS
+
 ## ThreadLocal
 
 ### ThreadLocal在哪里能用到？

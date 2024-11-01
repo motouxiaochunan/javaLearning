@@ -24,7 +24,7 @@
 
 **重载**指的是同样一个方法能够根据输入数据不同作出不同的处理。
 
-**重写**是当子类继承父类的相同方法，输入数据一样但要作出与父类
+**重写**是当子类继承父类的相同方法，输入数据一样但要作出与父
 
 ## 面向对象基础
 
@@ -66,11 +66,31 @@
 
 **深拷贝**：深拷贝会完全复制整个对象，包括这个对象的内部对象。
 
+### String s1=new String("abc")这句话创建了几个字符串对象？
+
+创建了1或2个字符串对象。
+
+1. 如果字符串常量池不存在"abc"：创建2个字符串对象，一个在字符串常量池中。一个在堆中，由`new String()`创建，并使用常量池中的"abc"初始化。
+
+2. 如果字符串常量池中已经存在"abc"，会创建1个字符串对象。该对象在堆中，由`new String()`创建。
+
+### String的变量和常量做"+"运算时发生了什么？
+
+对于编译期间可以确定值的常量字符串，jvm会在编译期间就将其存入字符串常量值。
+
+常量折叠会把常量表达式的值求出来作为常量嵌在最终生成的代码中。
+
+对于`String str3="str"+"ing"`，编译器会优化成`String str3="string"`。
+
+**但引用的值在程序编译期间是无法确定的，编译器无法进行优化。**
+
+对象引用和"+"的拼接，实际上是通过`StringBuilder`调用`append()`方法实现的，拼接完成后调用`toString()`得到一个`String`对象。
+
 ## 异常
 
 ### Exception和Error有什么区别
 
-Error属于程序无法处理的错误，比如OutOfMemoryError、NoClassDefFoundError等。
+Error属于程序无法处理的错误，比如`OutOfMemoryError`、`NoClassDefFoundError`等。
 
 ### RunTimeException和IO Exception有什么区别
 
@@ -90,21 +110,39 @@ Error属于程序无法处理的错误，比如OutOfMemoryError、NoClassDefFoun
 
 + 根据给定字符串查找Class对象，而这个类不存在。
 
+### 捕获Error的情况？
+
+**Error**的出现代表的是一些严重的非正常错误，这些Error的出现代表的是程序已经不用进行处理了，比如OutOfMemoryError，如果出现这个错误的话，程序已经无法运行下去，捕获也没有意义了。
+
 ## 反射
 
 ### 反射的应用场景
 
+**反射**赋予了在运行时分析类以及执行类中方法的能力，通过反射可以获取类的所有属性和方法，并调用这些属性和方法。
+
 Spring框架中的AOP模块大量使用了动态代理，而动态代理的实现依赖反射。
 
-Java中的注解实现也用到了反射。
+Java中的注解实现也用到了反射，可以基于反射分析类，获取到类/属性/方法/方法的参数上的注解，获取到注解之后可以做进一步的处理。
 
 比如Spring中可以用@Component注解声明一个类为SpringBean，省去了在xml文件中配置的过程。
 
 ### 什么是注解
 
-注解用于修饰类、方法或变量，提供某些信息供程序在编译或者运行时使用。
+注解本质是一个继承了`Annotation`的特殊接口。
 
 ### 注解怎样被解析
+
++ **编译期直接扫描**：编译器在编译Java代码时扫描对应的注解并处理。
+
++ **运行期通过反射处理**：在运行期间通过反射来进行处理。
+
+## 泛型
+
+### 泛型是什么？有什么用？
+
+使用泛型参数，可以增强代码的可读性以及稳定性。
+
+编译器可以对泛型参数进行检测，通过泛型参数可以指定传入的对象类型，比如`ArrayList<Person> persons= new ArrayList<Person>()`这行代码就指明了该`ArrayList`对象只能传入`Person`对象，如果传入其他对象就会报错。
 
 ## 序列化和反序列化
 
@@ -152,6 +190,18 @@ Java API中，可以从中读入一个字节序列的对象称作**输入流**�
 
 + `ArrayList`创建时不需要指定大小，数组必须指定。
 
+## PriorityQueue
+
++ `PriorityQueue`利用二叉堆的数据结构实现，底层使用可变长的数组存储。
+
++ `PriorityQueue`不支持存储null和non-comparable对象。
+
++ `PriorityQueue`默认是小顶堆，但可以接收`Comparator`来自定义元素优先级先后。
+
+### BlockingQueue
+
+线程池中用到的就是BlockingQueue，管理线程把事件放入队列，线程池中的线程将事件取出队列。
+
 ### HashMap和Hashtable的区别
 
 + `HashMap`是非线程安全的，`Hashtable`内部的方法基本都经过`synchronized`修饰因此是线程安全的。
@@ -161,6 +211,14 @@ Java API中，可以从中读入一个字节序列的对象称作**输入流**�
 + JDK1.8以后`HashMap`在数组长度>=64且链表长度大于阈值时会将链表转化为红黑树，`Hashtable`没有这样的机制。
 
 + `HashMap`对`hashcode`值进行混合扰动以减少冲突，而`Hashtable`直接使用`hashcode`值。
+
+### HashMap和TreeMap的区别
+
+`TreeMap`额外实现了`NavigableMap`和`SortedMap`接口。
+
+`NavigableMap`让`TreeMap`有了对集合内元素搜索的能力。
+
+`SortedMap`让`TreeMap`有了对集合中元素根据键排序的能力。
 
 ### HashMap底层实现
 
